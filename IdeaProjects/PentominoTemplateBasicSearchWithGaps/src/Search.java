@@ -13,7 +13,7 @@ public class Search
     public static final int horizontalGridSize = 5;
     public static final int verticalGridSize = 6;
     
-    public static final char[] input = { 'W', 'Y', 'I', 'T', 'Z', 'L'};
+    public static char[] input;
     
     //Static UI class to display the board
     public static UI ui = new UI(horizontalGridSize, verticalGridSize, 50);
@@ -244,6 +244,9 @@ public class Search
 	 */
     public static void main(String[] args)
     {
-        search();
+    	for(int i = 0; i < args[0].length(); i++){//input commands in the format "WXFN"
+			input[i] = args[0].charAt(i);
+			System.out.println(input[i]);
+		}
     }
 }
