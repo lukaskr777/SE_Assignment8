@@ -10,8 +10,8 @@
  */
 public class Search
 {
-    public static final int horizontalGridSize = 5;
-    public static final int verticalGridSize = 6;
+    public static int horizontalGridSize;
+    public static int verticalGridSize;
     
     public static char[] input;
     
@@ -248,5 +248,10 @@ public class Search
 			input[i] = args[0].charAt(i);
 			System.out.println(input[i]);
 		}
+    	if(args[1] != null && args[2] != null) {
+			horizontalGridSize = Integer.parseInt(args[1]);
+			verticalGridSize = Integer.parseInt(args[2]);
+		}
+    	search();
     }
 }
