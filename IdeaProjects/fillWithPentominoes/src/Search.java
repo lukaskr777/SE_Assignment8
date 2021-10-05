@@ -271,5 +271,7 @@ public class Search
     		horizontalGridSize = 5;
     		verticalGridSize = 12;
 		}*/
+		int[][] field = new int[horizontalGridSize][verticalGridSize];
+		System.out.println(recursionSearch(field,0,0,0,0));
     }
 }
