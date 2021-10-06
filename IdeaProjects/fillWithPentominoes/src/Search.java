@@ -77,6 +77,8 @@ public class Search
 
     private static boolean recursionSearch(int[][] field,int i,int mutation,int x,int y)
 	{
+	    //make sure that board empties itself if there is no solution to be found
+		//are two of the same pentominos allowed that have different rotations??
         int pentID = characterToID(input[i]);
         int[][] piece = PentominoDatabase.data[pentID][mutation];
 		if(isFull(field))
@@ -88,17 +90,35 @@ public class Search
 			//tries to add the piece to the field
 			if(addPiece(field,piece,pentID,x,y))
 			{
+				//if it is possible, adds the piece
 				addPiece(field,piece,pentID,x,y);
+				//runs the function again for the next column value
 				if(y < horizontalGridSize - 1)
 				{
-					return recursionSearch(field,i + 1,mutation,x,y + 1);
+					if(!recursionSearch(field,i + 1,mutation,x,y + 1))
+					{
+						return recursionSearch(field,i + 2,mutation,x,y + 1);//i can go out of bounds, catch the error?
+					}
+					else
+					{
+						return recursionSearch(field,i + 1,mutation,x,y + 1);
+					}
 				}
+				//if columns are exceeded, set columns to 0 and increment x by 1
 				else
 				{
 					y = 0;
-					return recursionSearch(field,i + 1,mutation,x + 1,y);
+					//if you can't place the next pentomino, try the one after that
+					if(!recursionSearch(field,i + 1,mutation,x + 1,y))
+					{
+						return recursionSearch(field,i+2,mutation,x + 1,y);//i can go out of bounds, catch the error?
+					}
+					else
+					{
+						return recursionSearch(field,i + 1,mutation,x + 1,y);
+					}
 				}
-				//need to still make sure it moves along rows as well
+				//this way, the whole array will be traversed until it is no longer possible to add pentominoes
 			}
 			//if it's not possible, try a different mutation of the piece
 			else
@@ -106,13 +126,33 @@ public class Search
 				//tries all of the mutations
 				if(mutation < 7)
 				{
-					return recursionSearch(field, i, mutation + 1, x, y);
+					if(!recursionSearch(field,i,mutation + 1,x,y))
+					{
+						return recursionSearch(field,i + 1,mutation,x,y);//i can go out of bounds, catch the error?
+					}
+					else
+					{
+						return recursionSearch(field,i,mutation + 1,x,y);
+					}
 				}
 				//if none fit, tries a different pentomino
+				else if(mutation == 7 && i < input.length)
+				{
+					mutation = 0;
+					if(!recursionSearch(field,i + 1,mutation,x,y))
+					{
+						return recursionSearch(field,i+2,mutation,x,y);//i can go out of bounds, catch the error?
+					}
+					else
+					{
+						return recursionSearch(field,i + 1,mutation,x,y);
+					}
+				}
+				//if no pentomino and no mutation of pentominoes fit, reset field to latest possible pentomino placement
 				else
 				{
-					return recursionSearch(field,i + 1,mutation,x,y);
-				}
+					return false;
+                }
 			}
 		}
 	}
@@ -222,7 +262,7 @@ public class Search
             {
                 if (piece[i][j] == 1)
                 {
-                	if(field[x+i][y+j] < 0)
+                	if(field[x + i][y + j] < 0)
                 	{
 						// Add the ID of the pentomino to the board if the pentomino occupies this square
 						field[x + i][y + j] = pieceID;
@@ -231,28 +271,10 @@ public class Search
 					{
 						return false;
 					}
-                	/*else
-                		{				//if the pentomino is to be placed on top of another, it does not place the specific
-                		counter++;		//tile and deletes the rest of the pentomino based on the ID's located on the field,
-					}*/					//but this does not work for different rotations of the same pentomino
                 }
             }
         }
         return true;
-
-        /*if(counter > 0)
-        {
-        	for(int i = 0; i < piece.length; i++)
-        	{
-        		for(int j = 0; j < piece[i].length; j++)
-        		{
-        			if(field[x+i][y+j] == pieceID)
-        			{
-						field[x + i][y + j] = 0;
-					}
-				}
-			}
-		}*/
     }
 
 	/**
