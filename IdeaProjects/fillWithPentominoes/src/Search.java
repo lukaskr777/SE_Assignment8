@@ -74,19 +74,69 @@ public class Search
     	} 
     	return pentID;
     }
-
-    private static boolean recursionSearch(int[][] field,int i,int mutation,int x,int y)
+	private static boolean greedyRecursion(int[][] field, int i, int mutation, int x, int y)
 	{
-	    //make sure that board empties itself if there is no solution to be found
-		//are two of the same pentominos allowed that have different rotations??
+		//need to check for pieces not yet placed
+		int pentID = characterToID(input[i]);
+		int[][] piece = PentominoDatabase.data[pentID][mutation];
+		if(isFull(field))
+		{
+			ui.setState(field);
+			System.out.println("Solution found");
+			return true;
+		}
+		else
+		{
+			if(addPiece(field,piece,pentID,x,y)){
+				addPiece(field,piece,pentID,x,y);
+				if(y < horizontalGridSize - 1)
+				{
+					return greedyRecursion(field,i + 1,mutation,x,y + 1);
+				}
+				else
+				{
+					y = 0;
+					return greedyRecursion(field,i + 1,mutation,x + 1,y);
+				}
+			}
+			else
+			{
+				if(mutation < PentominoDatabase.data[pentID].length)
+				{
+					return greedyRecursion(field,i,mutation + 1,x,y);
+				}
+				else if(mutation == PentominoDatabase.data[pentID].length - 1)
+				{
+					mutation = 0;
+					return greedyRecursion(field,i + 1,mutation,x,y);
+				}
+				else
+				{
+					deletePiece(field,pentID);
+					return greedyRecursion(field,i + 1,mutation,x,y);
+				}
+			}
+		}
+	}
+    private static boolean recursionSearch(int[][] field, int i, int mutation, int x, int y)
+			//can there be more of the same pentomino but mutated differently?
+	{
+		if(i >= input.length)
+		{
+			return false;
+		}
         int pentID = characterToID(input[i]);
+		if(mutation >= PentominoDatabase.data[pentID].length)
+		{
+			return false;
+		}
         int[][] piece = PentominoDatabase.data[pentID][mutation];
 		if(isFull(field))
 		{
 			return true;
 		}
 		else
-			{
+		{
 			//tries to add the piece to the field
 			if(addPiece(field,piece,pentID,x,y))
 			{
@@ -97,7 +147,7 @@ public class Search
 				{
 					if(!recursionSearch(field,i + 1,mutation,x,y + 1))
 					{
-						return recursionSearch(field,i + 2,mutation,x,y + 1);//i can go out of bounds, catch the error?
+						return recursionSearch(field,i + 2,mutation,x,y + 1);
 					}
 					else
 					{
@@ -111,7 +161,7 @@ public class Search
 					//if you can't place the next pentomino, try the one after that
 					if(!recursionSearch(field,i + 1,mutation,x + 1,y))
 					{
-						return recursionSearch(field,i+2,mutation,x + 1,y);//i can go out of bounds, catch the error?
+						return recursionSearch(field,i+2,mutation,x + 1,y);
 					}
 					else
 					{
@@ -128,7 +178,7 @@ public class Search
 				{
 					if(!recursionSearch(field,i,mutation + 1,x,y))
 					{
-						return recursionSearch(field,i + 1,mutation,x,y);//i can go out of bounds, catch the error?
+						return recursionSearch(field,i + 1,mutation,x,y);
 					}
 					else
 					{
@@ -136,19 +186,19 @@ public class Search
 					}
 				}
 				//if none fit, tries a different pentomino
-				else if(mutation == 7 && i < input.length)
+				else if(mutation == 7)
 				{
 					mutation = 0;
 					if(!recursionSearch(field,i + 1,mutation,x,y))
 					{
-						return recursionSearch(field,i+2,mutation,x,y);//i can go out of bounds, catch the error?
+						return recursionSearch(field,i+2,mutation,x,y);
 					}
 					else
 					{
 						return recursionSearch(field,i + 1,mutation,x,y);
 					}
 				}
-				//if no pentomino and no mutation of pentominoes fit, reset field to latest possible pentomino placement
+				//if no pentomino and no mutation of pentominoes fit, return false
 				else
 				{
 					return false;
@@ -276,6 +326,19 @@ public class Search
         }
         return true;
     }
+    public static void deletePiece(int[][] field, int pieceID)
+	{
+		for(int i = 0; i < field.length; i++)
+		{
+			for(int j = 0; j < field[i].length; j++)
+			{
+				if(field[i][j] == pieceID)
+				{
+					field[i][j] = -1;
+				}
+			}
+		}
+	}
 
 	/**
 	 * Main function. Needs to be executed to start the basic search algorithm
