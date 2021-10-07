@@ -11,9 +11,9 @@
 public class Search
 {
     public static int horizontalGridSize = 5;
-    public static int verticalGridSize = 6;
+    public static int verticalGridSize = 12;
 
-    public static char[] input = {'W','X','N','L','Y','P'};
+    public static char[] input = {'L','U','X','T','P','F','I','V','W','Y','Z','N'};
     
     //Static UI class to display the board
     public static UI ui = new UI(horizontalGridSize, verticalGridSize, 50);
@@ -145,6 +145,23 @@ public class Search
 		return character;
 	}
 
+	private static boolean checkIfValid(int[][] field,int x,int y,int[][] pieceToAdd)
+	{
+		for(int i = 0; i < pieceToAdd.length; i++)
+		{
+			for(int j = 0; j < pieceToAdd[i].length; j++){
+				if(pieceToAdd[i][j] == 1)
+				{
+					if(field[x + i][y + j] != -1)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
     /**
      * The recursive search with a basic pruning algorithm implemented, explained in method
      * @param field is a 2-dimensional array to be filled with tiles
@@ -168,21 +185,20 @@ public class Search
 				//creates the piece based on the mutations and pentomino ID's dicatated by the previous loop
 				int[][] piece = PentominoDatabase.data[pentID][j];
 				//goes through all x values and tries to place a pentomino there except when the height would exceed
-				for(int k = 0; k < field.length - PentominoDatabase.data[pentID][j].length; k++)// the number of rows
+				for(int k = 0; k < field.length - PentominoDatabase.data[pentID][j].length + 1; k++)// the number of rows
 				{
 					//same as above, but for y values
-					for(int l = 0; l < field[k].length - PentominoDatabase.data[pentID][j][0].length; l++)
+					for(int l = 0; l < field[k].length - PentominoDatabase.data[pentID][j][0].length + 1; l++)
 					{
-                        if (addPiece(field,piece,pentID,k,l))
+                        if(checkIfValid(field,k,l,piece))
                         {
                             //actually adds the piece
                             addPiece(field,piece,pentID,k,l);
-
                             //before starting recursion it needs to be checked whether the solution is even feasible (pruning)
-                            if(smallTilesValid(field))
-                            {
+
                                 //runs the whole function again and removing the pentomino added at the same time
-                                recursiveSearch(field, removeInputChar(inputField, idToCharacter(pentID)));
+								inputField = removeInputChar(inputField,idToCharacter(pentID));
+                                recursiveSearch(field,inputField);
 
                                 //if the branch is complete and a solution has not been found, try again with the pentomino added
                                 //back to the list, where the function runs again but using a different set of pentominos
@@ -190,7 +206,8 @@ public class Search
 								//starting at the x and y coordinates of the places tile, ALLOWING FOR DUPLICATES,
 								//since it just deletes the most recent pentomino.
                                 deletePiece(field, pentID,k,l);
-                            }
+                                inputField = addInputChar(inputField,idToCharacter(pentID));
+
                         }
                     }
 				}
@@ -282,7 +299,7 @@ public class Search
 		}
 		else
 		{
-			if(addPiece(field,piece,pentID,x,y)){
+			if(checkIfValid(field,x,y,piece)){
 				addPiece(field,piece,pentID,x,y);
 				removeInputChar(input,idToCharacter(pentID));
 			}
@@ -346,7 +363,7 @@ public class Search
 		else
 		{
 			//tries to add the piece to the field
-			if(addPiece(field,piece,pentID,x,y))
+			if(checkIfValid(field,x,y,piece))
 			{
 				//if it is possible, adds the piece
 				addPiece(field,piece,pentID,x,y);
@@ -512,7 +529,7 @@ public class Search
 	 * @param x x position of the pentomino
 	 * @param y y position of the pentomino
 	 */
-    public static boolean addPiece(int[][] field, int[][] piece, int pieceID, int x, int y)
+    public static void addPiece(int[][] field, int[][] piece, int pieceID, int x, int y)
     {
         for(int i = 0; i < piece.length; i++) // loop over x position of pentomino
         {
@@ -520,19 +537,14 @@ public class Search
             {
                 if (piece[i][j] == 1)
                 {
-                	if(field[x + i][y + j] < 0)
+                	if(field[x + i][y + j] == -1)
                 	{
 						// Add the ID of the pentomino to the board if the pentomino occupies this square
 						field[x + i][y + j] = pieceID;
 					}
-                	else
-					{
-						return false;
-					}
                 }
             }
         }
-        return true;
     }
     public static void deletePiece(int[][] field, int pieceID,int x,int y)
 	{
