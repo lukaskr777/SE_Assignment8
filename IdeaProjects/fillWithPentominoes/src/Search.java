@@ -235,26 +235,22 @@ public class Search
                         if(checkIfValid(field,k,l,piece))
                         {
                             //actually adds the piece
-							//ui.setState(field);
                             addPiece(field,piece,pentID,k,l);
-                            //Thread.sleep(1000);
                             //before starting recursion it needs to be checked whether the solution is even feasible (pruning)
-							//if(smallTilesValid(field))
-							//{
-								//System.out.println("Small tiles not present");
+							if(smallTilesValid(field))
+							{
+								System.out.println("Small tiles not present");
 								//runs the whole function again and removing the pentomino added at the same time
 								inputField = removeInputChar(inputField, idToCharacter(pentID));
 								pieceByPiece(field, inputField);
-								//Thread.sleep(1000);
 								//if the branch is complete and a solution has not been found, try again with the pentomino added
 								//back to the list, where the function runs again but using a different set of pentominos
 								//not yet placed.  This method also deletes all pentID tiles by forming a square
 								//starting at the x and y coordinates of the places tile, ALLOWING FOR DUPLICATES,
 								//since it just deletes the most recent pentomino.
 								deletePiece(field, pentID, k, l);
-								//ui.setState(field);
 								inputField = addInputChar(inputField, idToCharacter(pentID));
-							//}
+							}
                         }
                     }
 				}
