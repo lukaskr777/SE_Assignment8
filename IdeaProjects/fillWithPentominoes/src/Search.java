@@ -13,7 +13,7 @@ public class Search
     public static int horizontalGridSize = 5;
     public static int verticalGridSize = 6;
 
-    public static char[] input = {'W','X','N','L'};
+    public static char[] input = {'W','X','N','L','Y','P'};
     
     //Static UI class to display the board
     public static UI ui = new UI(horizontalGridSize, verticalGridSize, 50);
@@ -211,7 +211,7 @@ public class Search
         {
             for(int j = 0; j < field[i].length; j++)
             {
-                if(floodFill(field,i,j,0,0) < 4)
+                if(floodFill(field,i,j,0,false) % 5 != 0)
                 {
                     return false;
                 }
@@ -225,39 +225,34 @@ public class Search
      * @param field is the field used in the recursion search
      * @param x is the x value of the tile being checked
      * @param y is the y value of the tile being checked
-     * @param dir is the direction faced when traversing the tiles to prevent stack overflow
      * @param counter is the counter to track the number of empty spaces next to each other
      * @return the number of squares next to each other for the given x and y
      */
-    public static int floodFill(int[][] field,int x,int y,int dir,int counter)
+    public static int floodFill(int[][] field,int x,int y,int counter,boolean visited)
     {
         //checks tile to the right of the specified tile
-        if(y < field.length && field[x][y + 1] < 0)
+        if(y < field.length && field[x][y + 1] < 0 && !visited)
         {
             counter++;
-            if(dir != 3)
-            floodFill(field,x,y + 1,1,counter);
+            floodFill(field,x,y + 1,counter,true);
         }
         //checks tile above the specified tile
-        if(x < field.length && field[x + 1][y] < 0)
+        if(x < field.length && field[x + 1][y] < 0 && !visited)
         {
             counter++;
-            if(dir != 2)
-            floodFill(field,x + 1,y,0,counter);
+            floodFill(field,x + 1,y,counter,true);
         }
         //checks tile to the left of the specified tile
-        if(y > 0 && field[x][y - 1] < 0)
+        if(y > 0 && field[x][y - 1] < 0 && !visited)
         {
             counter++;
-            if(dir != 1)
-            floodFill(field,x,y - 1,3,counter);
+            floodFill(field,x,y - 1,counter,true);
         }
         //checks tile below the specified tile
-        if(x > 0 && field[x - 1][y] < 0)
+        if(x > 0 && field[x - 1][y] < 0 && !visited)
         {
             counter++;
-            if(dir != 0)
-            floodFill(field,x - 1,y,2,counter);
+            floodFill(field,x - 1,y,counter,true);
         }
         return counter;
     }
