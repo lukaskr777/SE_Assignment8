@@ -3,7 +3,7 @@
  * @version 2022.0
  */
 
- import java.io.FileNotFoundException;
+import java.io.FileNotFoundException;
 //import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -15,15 +15,15 @@ import java.util.ArrayList;
 public class PentominoBuilder {
 
     //All basic pentominoes that will be rotated and flipped
-    private static int[][][] basicDatabase = {  //1's represent pentomino, 0's empty grid squares
-            {                                   //3D array - first dimension defines
-            	// pentomino representation X
+    private static int[][][] basicDatabase = {
+            {
+                    // pentomino representation X
                     {0,1,0},
                     {1,1,1},
                     {0,1,0}
             },
             {
-            	// pentomino representation I
+                    // pentomino representation I
                     {1},
                     {1},
                     {1},
@@ -31,76 +31,64 @@ public class PentominoBuilder {
                     {1}
             },
             {
-            	// pentomino representation Z (flipped through horizontal axis)
+                    // pentomino representation Z
                     {0,1,1},
                     {0,1,0},
                     {1,1,0}
             },
             {
-            	// pentomino representation T
+                    // pentomino representation T
                     {1,1,1},
                     {0,1,0},
                     {0,1,0}
             },
             {
-            	// pentomino representation U (rotated 90 degrees clockwise)
+                    // pentomino representation U
                     {1,1},
                     {1,0},
                     {1,1}
             },
             {
-            	// pentomino representation V (rotated 90 degrees clockwise)
+                    // pentomino representation V
                     {1,1,1},
                     {1,0,0},
                     {1,0,0}
             },
             {
-            	// pentomino representation W (rotated 90 degrees counterclockwise)
+                    // pentomino representation W
                     {0,0,1},
                     {0,1,1},
                     {1,1,0}
             },
             {
-            	// pentomino representation Y (flipped through horizontal axis)
+                    // pentomino representation Y
                     {1,0},
                     {1,1},
                     {1,0},
                     {1,0}
             },
             {
-            	// pentomino representation L
+                    // pentomino representation L
                     {1,0},
                     {1,0},
                     {1,0},
                     {1,1}
             },
             {
-            	//
-        		//
-        		// TODO: Implement pentomino representation P
-        		//
-        		//
+                    // pentomino representation P
                     {1,1},
                     {1,1},
                     {1,0}
             },
             {
-            	//
-        		//
-        		// TODO: Implement pentomino representation N (rotated 90 degrees clockwise)
-        		//
-        		//
+                    // pentomino representation N
                     {0,1},
                     {1,1},
                     {1,0},
                     {1,0}
             },
             {
-            	//
-        		//
-        		// TODO: Implement pentomino representation F
-        		//
-        		//
+                    // pentomino representation F
                     {0,1,1},
                     {1,1,0},
                     {0,1,0}
@@ -141,23 +129,12 @@ public class PentominoBuilder {
             }
 
             //add the found pieces of just one basic piece to the database
-
-            //code below is for debugging purposes
-            /*for(int j = 0; j < tempDatabase.length; j++){
-                for(int k = 0; k < tempDatabase[j].length; k++){
-                    for(int l = 0; l < tempDatabase[j][k].length; l++){
-                        System.out.print(tempDatabase[j][k][l] + " ");
-                    }
-                    System.out.println();
-                }
-                System.out.println();
-            }*/
             database.add(tempDatabase);
         }
     }
 
     /**
-     * Rotate the matrix x times over 90 degrees 
+     * Rotate the matrix x times over 90 degrees
      * Assume that the matrix is a square!
      * It does not make a copy, so the return matrix does not have to be used
      * @param data: a matrix
@@ -271,28 +248,28 @@ public class PentominoBuilder {
         //do it for the the amount of rows there are to be sure
         for(int i=0;i<data[0].length;i++)
         {
-            //check if the first column is empty
+            //check if the first row is empty
             int empty=0;
-        for(int j=0;j<data.length;j++)
-        {
-            if(data[j][0]==1)
-            {
-                empty=1;
-            }
-        }
-        //if empty move everything one left
-        if(empty==0)
-        {
             for(int j=0;j<data.length;j++)
             {
-                for(int k=1;k<data[j].length;k++)
+                if(data[j][0]==1)
                 {
-                    data[j][k - 1] = data[j][k];
+                    empty=1;
                 }
             }
-            amountToCut++;
+            //if empty move everything one up
+            if(empty==0)
+            {
+                for(int j=0;j<data.length;j++)
+                {
+                    for(int k=1;k<data[j].length;k++)
+                    {
+                        data[j][k - 1] = data[j][k];
+                    }
+                }
+                amountToCut++;
+            }
         }
-    }
         //make the last amountToCut rows empty, because these are copies
         for(int j=0;j<data.length;j++) {
             for (int k = data[j].length - amountToCut; k < data[j].length; k++) {
@@ -305,7 +282,7 @@ public class PentominoBuilder {
         //do it for the the amount of columns there are to be sure
         for(int i=0;i<data.length;i++)
         {
-            //check if the first row is empty
+            //check if the first column is empty
             int empty=0;
             for(int j=0;j<data[0].length;j++)
             {
@@ -314,7 +291,7 @@ public class PentominoBuilder {
                     empty=1;
                 }
             }
-            //if empty move everything one up
+            //if empty move everything one to the left
             if(empty==0)
             {
                 for(int j=0;j<data[0].length;j++)
@@ -395,21 +372,16 @@ public class PentominoBuilder {
      * @param data2: the second matrix
      * @return true if equal, false otherwise
      */
-    public static boolean isEqual(int[][] data1, int[][] data2)
-    {
-    	
-    	//
-    	//
-    	// TODO: To be implemented
-    	//
-    	//
-        for(int i = 0; i < data1.length; i++){
-            for(int j = 0; j < data1[i].length; j++){
-                if(data1[i][j]!=data2[i][j]){
+    public static boolean isEqual(int[][] data1, int[][] data2) {
+
+        for(int i =0; i<data1.length; i++) {
+            for(int j=0; j<data1[0].length; j++) {
+                if (data1[i][j]!=data2[i][j]) {
                     return false;
                 }
             }
         }
+
         return true;
     }
 
@@ -473,8 +445,8 @@ public class PentominoBuilder {
         return returnData;
     }
 
-    
-    /** 
+
+    /**
      * @param args
      * @throws FileNotFoundException
      * @throws UnsupportedEncodingException
@@ -482,7 +454,7 @@ public class PentominoBuilder {
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
         makeDatabase();
 
-        /*PrintWriter writer = new PrintWriter("pentominos.csv", "UTF-8");
+        PrintWriter writer = new PrintWriter("pentominos.csv", "UTF-8");
 
         for(int i = 0; i < database.size(); i++)
         {
@@ -501,8 +473,7 @@ public class PentominoBuilder {
                 writer.println();
             }
         }
-        writer.close();*/
-
+        writer.close();
     }
 
 }

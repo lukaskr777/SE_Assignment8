@@ -10,20 +10,20 @@ import java.util.Scanner;
 
 /**
  * This class takes care of reading all pentominoes and their permutations from a CSV
- * Information about the structure of the CSV file (also included in pentomino.csv.README)
+ * Information abpout the structure of the CSV file (also included in pentomino.csv.README)
  * Each line in the CSV file defines one permutation of a pentomino.
  *  - The first number is the ID for a pentomino, from 0 to 11.
  *  - The second number is the index of the permutation (rotation, flip, etc.), between 0 to 7.
- *  - The third and fourth numbers are the X and Y sizes respectively.
+ *  - The third and forth numbers are the X and Y sizes respectively.
  *  - The following X*Y numbers are a matrix showing which positions in the grid are occupied or empty (defined by the shape of the pentomino).
- * 
+ *
  * This file does not contain a header.
  * The pentominoes should be sorted by ID in increasing order
- * 
+ *
  * EXAMPLE:
- * 
+ *
  * 2,1,3,3,1,0,0,1,1,1,0,0,1
- * 
+ *
  * ID: 2
  * Permutation: 1
  * X: 3 squares
@@ -36,12 +36,12 @@ import java.util.Scanner;
 public class PentominoDatabase
 {
     //Stores and loads the data on program initialization
-    public static int[][][][] data = loadData("C:\\Users\\mspisak\\IdeaProjects\\fillWithPentominoes\\pentominos.csv");
+    public static int[][][][] data = loadData("pentominos.csv");
 
-    
-    /** 
+
+    /**
      * Loads and decodes the CSV file
-     * @param fileName name of the CSV file to be used
+     * @param fileName name of the CVS file to be used
      * @return list of pieces. Dimensions: 1-Piece ID; 2-Mutation; 3-X representation; 4-Y representation
      * @exception FileNotFoundException if the file is not found (probably, wrong location of the file and/or typo in the fileName parameter)
      */

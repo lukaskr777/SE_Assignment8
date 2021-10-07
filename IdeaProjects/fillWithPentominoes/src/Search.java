@@ -10,10 +10,12 @@
  */
 public class Search
 {
+	public static int counter;
+	public static int solutionCount = 0;
     public static int horizontalGridSize = 5;
-    public static int verticalGridSize = 12;
+    public static int verticalGridSize = 5;
 
-    public static char[] input = {'L','U','X','T','P','F','I','V','W','Y','Z','N'};
+    public static char[] input = {'L','U','X','T','P'};
     
     //Static UI class to display the board
     public static UI ui = new UI(horizontalGridSize, verticalGridSize, 50);
@@ -56,8 +58,7 @@ public class Search
 	/**
 	 * Helper function which starts a basic search algorithm
 	 */
-    public static void search()
-    {
+    public static void search() throws InterruptedException {
         // Initialize an empty board
         int[][] field = new int[horizontalGridSize][verticalGridSize];
 
@@ -71,7 +72,7 @@ public class Search
             }
         }
         //Start the basic search
-        recursiveSearch(field,input);
+        pieceByPiece(field,input);
     }
 	
 	/**
@@ -162,22 +163,49 @@ public class Search
 		return true;
 	}
 
+	private static void tileByTile(int[][] field,char[] inputField,int id)
+	{
+		int pentID = characterToID(inputField[id]);
+		if(isFull(field))
+		{
+			solutionCount++;
+			System.out.println("Solution found.");
+			ui.setState(field);
+			return;
+		}
+
+		for(int i = 0; i < field.length; i++)
+		{
+			for(int j = 0; j < field[i].length; j++)
+			{
+				for(int k = 0; k < PentominoDatabase.data[pentID].length; k++)
+				{
+
+				}
+			}
+		}
+	}
+
     /**
      * The recursive search with a basic pruning algorithm implemented, explained in method
      * @param field is a 2-dimensional array to be filled with tiles
      * @param inputField is a 1-dimensional array used for tracking what tiles can still be placed on the board
      */
-	private static void recursiveSearch(int[][] field,char[] inputField)
-	{
+	private static void pieceByPiece(int[][] field,char[] inputField) throws InterruptedException {
 		//if the field is full, print the board state (assuming no overlap this is the correct solution)
 		if(isFull(field)){
+			solutionCount++;
+			System.out.println("Solution found.");
 			ui.setState(field);
-			System.out.println("Solution found");
 			return;
 		}
 		//goes through all indexes in the list of inputs
 		for(int i = 0; i < inputField.length; i++)
 		{
+			if(i == 0 && characterToID(inputField[i]) == 'X')//prunes the branching with X at the beginning
+			{
+				i++;
+			}
 			int pentID = characterToID(inputField[i]);//uses the index to set the pentomino
 			//goes through all of the permutations for each pentomino, accounting for less mutation possibilities
 			for(int j = 0; j < PentominoDatabase.data[pentID].length; j++)
@@ -194,24 +222,42 @@ public class Search
                         {
                             //actually adds the piece
                             addPiece(field,piece,pentID,k,l);
+							ui.setState(field);
+							Thread.sleep(1);
                             //before starting recursion it needs to be checked whether the solution is even feasible (pruning)
+							//if(smallTilesValid(field))
+							//{
 
-                                //runs the whole function again and removing the pentomino added at the same time
-								inputField = removeInputChar(inputField,idToCharacter(pentID));
-                                recursiveSearch(field,inputField);
+								//runs the whole function again and removing the pentomino added at the same time
+								inputField = removeInputChar(inputField, idToCharacter(pentID));
+								pieceByPiece(field, inputField);
 
-                                //if the branch is complete and a solution has not been found, try again with the pentomino added
-                                //back to the list, where the function runs again but using a different set of pentominos
-                                //not yet placed.  This method also deletes all pentID tiles by forming a square
+
+								//if the branch is complete and a solution has not been found, try again with the pentomino added
+								//back to the list, where the function runs again but using a different set of pentominos
+								//not yet placed.  This method also deletes all pentID tiles by forming a square
 								//starting at the x and y coordinates of the places tile, ALLOWING FOR DUPLICATES,
 								//since it just deletes the most recent pentomino.
-                                deletePiece(field, pentID,k,l);
-                                inputField = addInputChar(inputField,idToCharacter(pentID));
-
+								deletePiece(field, pentID, k, l);
+								ui.setState(field);
+								inputField = addInputChar(inputField, idToCharacter(pentID));
+							//}
                         }
                     }
 				}
 			}
+		}
+	}
+
+	private static void solutionCheck(int count)
+	{
+		if(count == 0)
+		{
+			System.out.println("No solutions.");
+		}
+		else
+		{
+			System.out.println("Number of solutions is: " + count);
 		}
 	}
 
@@ -224,14 +270,28 @@ public class Search
      */
 	public static boolean smallTilesValid(int[][] field)
     {
+    	boolean[][] floodArray = new boolean[field.length][field[0].length];
+    	for(int i = 0; i < field.length; i++)
+    	{
+    		for(int j = 0; j < field[i].length; j++)
+    		{
+				floodArray[i][j] = false;
+			}
+		}
         for(int i = 0; i < field.length; i++)
         {
             for(int j = 0; j < field[i].length; j++)
             {
-                if(floodFill(field,i,j,0,false) % 5 != 0)
-                {
-                    return false;
-                }
+            	if(field[i][j] == -1)
+            	{
+					counter = 0;
+					floodFill(field, i, j, floodArray);
+					System.out.println(counter);
+					if (counter % 5 != 0)
+					{
+						return false;
+					}
+				}
             }
         }
         return true;
@@ -242,36 +302,39 @@ public class Search
      * @param field is the field used in the recursion search
      * @param x is the x value of the tile being checked
      * @param y is the y value of the tile being checked
-     * @param counter is the counter to track the number of empty spaces next to each other
      * @return the number of squares next to each other for the given x and y
      */
-    public static int floodFill(int[][] field,int x,int y,int counter,boolean visited)
+    public static void floodFill(int[][] field,int x,int y,boolean[][] visited)
     {
+
         //checks tile to the right of the specified tile
-        if(y < field.length && field[x][y + 1] < 0 && !visited)
-        {
-            counter++;
-            floodFill(field,x,y + 1,counter,true);
+        if(y < field.length - 1 && field[x][y + 1] < 0 && !visited[x][y + 1])
+		{
+            counter = counter + 1;
+            visited[x][y + 1] = true;
+            floodFill(field,x,y + 1,visited);
         }
         //checks tile above the specified tile
-        if(x < field.length && field[x + 1][y] < 0 && !visited)
+        if(x < field.length - 1 && field[x + 1][y] < 0 && !visited[x + 1][y])
         {
-            counter++;
-            floodFill(field,x + 1,y,counter,true);
+			counter = counter + 1;
+			visited[x + 1][y] = true;
+            floodFill(field,x + 1,y,visited);
         }
         //checks tile to the left of the specified tile
-        if(y > 0 && field[x][y - 1] < 0 && !visited)
+        if(y > 0 && field[x][y - 1] < 0 && !visited[x][y - 1])
         {
-            counter++;
-            floodFill(field,x,y - 1,counter,true);
+			counter = counter + 1;
+			visited[x][y - 1] = true;
+            floodFill(field,x,y - 1,visited);
         }
         //checks tile below the specified tile
-        if(x > 0 && field[x - 1][y] < 0 && !visited)
+        if(x > 0 && field[x - 1][y] < 0 && !visited[x - 1][y])
         {
-            counter++;
-            floodFill(field,x - 1,y,counter,true);
+			counter = counter + 1;
+			visited[x - 1][y] = true;
+            floodFill(field,x - 1,y,visited);
         }
-        return counter;
     }
 
     /**
@@ -563,8 +626,7 @@ public class Search
 	/**
 	 * Main function. Needs to be executed to start the basic search algorithm
 	 */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) throws InterruptedException {
     	/*for(int i = 0; i < args[0].length(); i++){//input commands in the format "WXFN"
 			input[i] = args[0].charAt(i);
 		}
@@ -577,5 +639,6 @@ public class Search
     		verticalGridSize = 12;
 		}*/
 		search();
+		solutionCheck(solutionCount);
     }
 }
