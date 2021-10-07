@@ -4,18 +4,47 @@
  */
 
  import java.util.Random;
+ import java.util.Scanner;
 
 /**
  * This class includes the methods to support the search of a solution.
  */
 public class Search
 {
+	public static int getHorizontal()
+	{
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Enter the preferred horizontal grid size: ");
+		return scanner.nextInt();
+	}
+
+	// get the vertical grid size from user
+	public static int getVertical()
+	{
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Enter the preferred vertical grid size: ");
+		return scanner.nextInt();
+	}
+
+	// get the characters that should be used from user
+	public static char[] getCharacters(){
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Enter the characters that you want to use: ");
+		String character = scanner.nextLine();
+		char[] inputChar = new char[character.length()];
+
+		for(int i=0; i<character.length(); i++)
+		{
+			inputChar[i] = character.charAt(i);
+		}
+		return inputChar;
+	}
 	public static int counter;
 	public static int solutionCount = 0;
-    public static int horizontalGridSize = 5;
-    public static int verticalGridSize = 5;
+    public static int horizontalGridSize = getHorizontal();
+    public static int verticalGridSize = getVertical();
 
-    public static char[] input = {'L','U','X','T','P'};
+    public static char[] input = getCharacters();
     
     //Static UI class to display the board
     public static UI ui = new UI(horizontalGridSize, verticalGridSize, 50);
@@ -71,7 +100,8 @@ public class Search
             	field[i][j] = -1;
             }
         }
-        //Start the basic search
+        //Start the search
+		//basicSearch(field);
         pieceByPiece(field,input);
     }
 	
@@ -146,6 +176,14 @@ public class Search
 		return character;
 	}
 
+	/**
+	 * Checks if the pentomino to be placed does not overlap with any other pentomino.
+	 * @param field is the field where the pentomino will be placed
+	 * @param x is the x coordinate of the tile examined
+	 * @param y is the y coordinate of the tile examined
+	 * @param pieceToAdd is the piece to add
+	 * @return true if the piece is able to be placed, and false if vice versa
+	 */
 	private static boolean checkIfValid(int[][] field,int x,int y,int[][] pieceToAdd)
 	{
 		for(int i = 0; i < pieceToAdd.length; i++)
@@ -163,29 +201,6 @@ public class Search
 		return true;
 	}
 
-	private static void tileByTile(int[][] field,char[] inputField,int id)
-	{
-		int pentID = characterToID(inputField[id]);
-		if(isFull(field))
-		{
-			solutionCount++;
-			System.out.println("Solution found.");
-			ui.setState(field);
-			return;
-		}
-
-		for(int i = 0; i < field.length; i++)
-		{
-			for(int j = 0; j < field[i].length; j++)
-			{
-				for(int k = 0; k < PentominoDatabase.data[pentID].length; k++)
-				{
-
-				}
-			}
-		}
-	}
-
     /**
      * The recursive search with a basic pruning algorithm implemented, explained in method
      * @param field is a 2-dimensional array to be filled with tiles
@@ -195,7 +210,6 @@ public class Search
 		//if the field is full, print the board state (assuming no overlap this is the correct solution)
 		if(isFull(field)){
 			solutionCount++;
-			System.out.println("Solution found.");
 			ui.setState(field);
 			return;
 		}
@@ -221,25 +235,24 @@ public class Search
                         if(checkIfValid(field,k,l,piece))
                         {
                             //actually adds the piece
+							//ui.setState(field);
                             addPiece(field,piece,pentID,k,l);
-							ui.setState(field);
-							Thread.sleep(1);
+                            //Thread.sleep(1000);
                             //before starting recursion it needs to be checked whether the solution is even feasible (pruning)
 							//if(smallTilesValid(field))
 							//{
-
+								//System.out.println("Small tiles not present");
 								//runs the whole function again and removing the pentomino added at the same time
 								inputField = removeInputChar(inputField, idToCharacter(pentID));
 								pieceByPiece(field, inputField);
-
-
+								//Thread.sleep(1000);
 								//if the branch is complete and a solution has not been found, try again with the pentomino added
 								//back to the list, where the function runs again but using a different set of pentominos
 								//not yet placed.  This method also deletes all pentID tiles by forming a square
 								//starting at the x and y coordinates of the places tile, ALLOWING FOR DUPLICATES,
 								//since it just deletes the most recent pentomino.
 								deletePiece(field, pentID, k, l);
-								ui.setState(field);
+								//ui.setState(field);
 								inputField = addInputChar(inputField, idToCharacter(pentID));
 							//}
                         }
@@ -249,6 +262,10 @@ public class Search
 		}
 	}
 
+	/**
+	 * Simply prints the number of solutions :)
+	 * @param count is the solution count
+	 */
 	private static void solutionCheck(int count)
 	{
 		if(count == 0)
@@ -336,164 +353,6 @@ public class Search
             floodFill(field,x - 1,y,visited);
         }
     }
-
-    /**
-     * Failed recursion method #2.  Did not account for all solutions, as an array of which pieces are left to be placed
-     * was not used, and as such did not include the option to backtrack.  An unsuccessful attempt at the backtracking
-     * used the deletePiece method and recursion, however it did not add the piece it deleted back to the list of pieces
-     * to be added.
-     * In addition to this, the method would try to place a pentomino on top of another at the very beginning, and never
-     * iterate the y or x values if it was not possible, it would simply try either rotating the pentomino or changing it,
-     * and thus the method was abandoned after changing a few things past that point.
-     * @param field is the input field on which the recursion is to be performed
-     * @param i is the number that defines which pentomino to use
-     * @param mutation is the mutation of the pentomino
-     * @param x is the x value where to place the pentomino
-     * @param y is the y value of the pentomino
-     */
-	private static void greedyRecursion(int[][] field, int i, int mutation, int x, int y)
-	{
-		int pentID = characterToID(input[i]);
-		int[][] piece = PentominoDatabase.data[pentID][mutation];
-		if(isFull(field))
-		{
-			ui.setState(field);
-			System.out.println("Solution found");
-		}
-		else
-		{
-			if(checkIfValid(field,x,y,piece)){
-				addPiece(field,piece,pentID,x,y);
-				removeInputChar(input,idToCharacter(pentID));
-			}
-			else
-			{
-				if(y < horizontalGridSize - 1)
-				{
-					greedyRecursion(field,i + 1,mutation,x,y + 1);
-				}
-				else if(y == horizontalGridSize - 1)
-				{
-					y = 0;
-					greedyRecursion(field,i + 1,mutation,x + 1,y);
-				}
-				else if(mutation < PentominoDatabase.data[pentID].length - 1)
-				{
-					greedyRecursion(field,i,mutation + 1,x,y);
-				}
-				else if(mutation == PentominoDatabase.data[pentID].length - 1)
-				{
-					mutation = 0;
-					greedyRecursion(field,i + 1,mutation,x,y);
-				}
-				else
-				{
-					deletePiece(field,pentID,x,y);
-					greedyRecursion(field,i + 1,mutation,x,y);
-				}
-			}
-		}
-	}
-
-    /**
-     * Failed recursion attempt #1.  Works somewhat, but extremely inefficient and attempts to work with the fact that
-     * duplicate pentominoes are allowed.  Method was quickly abandoned but took very long to produce, which caused many
-     * problems and delays in the planned schedule of completing tasks.
-     * @param field is the field where the recursion was to be performed
-     * @param i dictates which pentomino to use
-     * @param mutation is the mutation of the pentomino
-     * @param x is the x value where to place the pentomino
-     * @param y is the y value where to place the pentomino
-     * @return a boolean if the solution was possible
-     */
-    private static boolean recursionSearch(int[][] field, int i, int mutation, int x, int y)
-			//can there be more of the same pentomino but mutated differently?
-	{
-		if(i >= input.length)
-		{
-			return false;
-		}
-        int pentID = characterToID(input[i]);
-		if(mutation >= PentominoDatabase.data[pentID].length)
-		{
-			return false;
-		}
-        int[][] piece = PentominoDatabase.data[pentID][mutation];
-		if(isFull(field))
-		{
-			return true;
-		}
-		else
-		{
-			//tries to add the piece to the field
-			if(checkIfValid(field,x,y,piece))
-			{
-				//if it is possible, adds the piece
-				addPiece(field,piece,pentID,x,y);
-				//runs the function again for the next column value
-				if(y < horizontalGridSize - 1)
-				{
-					if(!recursionSearch(field,i + 1,mutation,x,y + 1))
-					{
-						return recursionSearch(field,i + 2,mutation,x,y + 1);
-					}
-					else
-					{
-						return recursionSearch(field,i + 1,mutation,x,y + 1);
-					}
-				}
-				//if columns are exceeded, set columns to 0 and increment x by 1
-				else
-				{
-					y = 0;
-					//if you can't place the next pentomino, try the one after that
-					if(!recursionSearch(field,i + 1,mutation,x + 1,y))
-					{
-						return recursionSearch(field,i+2,mutation,x + 1,y);
-					}
-					else
-					{
-						return recursionSearch(field,i + 1,mutation,x + 1,y);
-					}
-				}
-				//this way, the whole array will be traversed until it is no longer possible to add pentominoes
-			}
-			//if it's not possible, try a different mutation of the piece
-			else
-			{
-				//tries all of the mutations
-				if(mutation < 7)
-				{
-					if(!recursionSearch(field,i,mutation + 1,x,y))
-					{
-						return recursionSearch(field,i + 1,mutation,x,y);
-					}
-					else
-					{
-						return recursionSearch(field,i,mutation + 1,x,y);
-					}
-				}
-				//if none fit, tries a different pentomino
-				else if(mutation == 7)
-				{
-					mutation = 0;
-					if(!recursionSearch(field,i + 1,mutation,x,y))
-					{
-						return recursionSearch(field,i+2,mutation,x,y);
-					}
-					else
-					{
-						return recursionSearch(field,i + 1,mutation,x,y);
-					}
-				}
-				//if no pentomino and no mutation of pentominoes fit, return false
-				else
-				{
-					return false;
-                }
-			}
-		}
-	}
 	
 	/**
 	 * Basic implementation of a search algorithm. It is not a brute force algorithm (it does not check all the posssible combinations)
@@ -555,11 +414,6 @@ public class Search
 	    		}
     		}
     		//Check whether complete field is filled
-    		//
-    		//
-    		// TODO: To be implemented
-    		//
-    		//
     		if(!isFull(field)){
     			solutionFound = false;
 			}
@@ -627,17 +481,6 @@ public class Search
 	 * Main function. Needs to be executed to start the basic search algorithm
 	 */
     public static void main(String[] args) throws InterruptedException {
-    	/*for(int i = 0; i < args[0].length(); i++){//input commands in the format "WXFN"
-			input[i] = args[0].charAt(i);
-		}
-    	if(args[1] != null && args[2] != null) {
-			horizontalGridSize = Integer.parseInt(args[1]);
-			verticalGridSize = Integer.parseInt(args[2]);
-		}
-    	else{
-    		horizontalGridSize = 5;
-    		verticalGridSize = 12;
-		}*/
 		search();
 		solutionCheck(solutionCount);
     }
