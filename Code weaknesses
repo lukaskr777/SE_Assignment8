@@ -19,3 +19,19 @@ Weakness number 5:
 wrongAnswer() can be incorporated into wasCorrectlyAnswered() by simply defining a condition and when it is false, would do what the
 wrongAnswer() method does.  This is a general design flaw, however, also with the GameRunner.java class, because this method is
 required to simulate the game in the way that is given.
+
+Weakness number 6:
+If the board size is changed, the method roll could break the game if not refactored.  It is much better to add a single variable upon which
+the board size is dependent in the entire program.
+
+Weakness number 7:
+wasCorrectlyAnswered() method has a misleading name.  It decides whether to continue the game and the implementation also implies that
+this method is called when the answer is correct, it does not check the correctness of the answer.
+
+Weakness number 8:
+add() method has a misleading name.  It does not say what it is adding, despite it adding new players, which can cause bugs/misunderstandings
+in the future.
+
+Weakness number 9:
+What if there are more players than 6?  The start of the Game class sets the player number to 6, but for different implementations of
+Game a lot of code would need to be refactored.

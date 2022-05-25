@@ -12,6 +12,7 @@ public class Game2 {
     int current_player_id;
     Player current_player;
     Question current_question;
+    GameAnnouncer announcer;
 
 	
 	public Game2() {
@@ -19,6 +20,7 @@ public class Game2 {
         this.winning_purse = 6;
 		this.current_player_id = 0;
         this.players = new ArrayList<>();
+        this.announcer = new GameAnnouncer();
 		initializePlayBoard();
 	}
 
@@ -65,8 +67,8 @@ public class Game2 {
         players.add(new Player(playerName, 0,0,false));
 
 
-		System.out.println(playerName + " was added");
-		System.out.println("They are player number " + players.size());
+		announcer.printPlayerAdded(playerName);
+		announcer.printPlayerNumber(players.size());
 		return true;
 	}
 
@@ -80,23 +82,22 @@ public class Game2 {
 
 	
 	public void roll(int roll) {
-        this.current_player = nextPlayer(); 
-		
-		System.out.println(current_player.getName() + " is the current player");
-		System.out.println("They have rolled a " + roll);
+        this.current_player = nextPlayer();
 
+        announcer.printCurrentPlayer(current_player.getName());
+		announcer.printRoll(roll);
 
 		if(current_player.inPenatlyBox() && !luckRoll(roll)){
 			
-			
-			System.out.println(current_player.getName() + " is not getting out of the penalty box");
+
+            announcer.printNotOutOfPenaltyBox(current_player.getName());
 			current_player.setIsgettingFromPenalty(false);
 		}
 		else{
 			if(current_player.inPenatlyBox()){
 				current_player.setIsgettingFromPenalty(true);
 
-				System.out.println(current_player.getName() + " is getting out of the penalty box");
+				announcer.printOutOfPenaltyBox(current_player.getName());
 				
 			}
 			movePlayer(current_player, roll);
@@ -116,15 +117,10 @@ public class Game2 {
         current_question = place.getQuestion();
 
 
-        System.out.println(player.getName()
-						+ "'s new location is "
-						+ player.getPosition());
-		System.out.println("The category is " + place.getCategory());
-		System.out.println(current_question.getQuestion());		
-
+        announcer.printNewLocation(player.getName(),player.getPosition());
+        announcer.printCategory(place.getCategory());
+        announcer.printQuestion(current_question.getQuestion());
     }
-
-
 
 	public boolean correctAnswer() {
 
@@ -134,14 +130,11 @@ public class Game2 {
 		} 	
 		else{
 				
-				System.out.println("Answer was correct!!!!");
+				announcer.printCorrect();
 				
 				current_player.addToPurse(current_question.getReward());
-	
-				System.out.println(current_player.getName()
-						+ " now has "
-						+ current_player.getPurse()
-						+ " Gold Coins.");
+
+                announcer.printCoins(current_player.getName(), current_player.getPurse());
 	
 				 continue_game = !didPlayerWin();
 		}
@@ -151,8 +144,8 @@ public class Game2 {
 	}
 
 	public boolean wrongAnswer() {
-		System.out.println("Question was incorrectly answered");
-		System.out.println(current_player.getName() + " was sent to the penalty box");
+		announcer.printIncorrect();
+		announcer.printSentToPenaltyBox(current_player.getName());
 		current_player.setInPenatly(true);
 		current_player = nextPlayer();
         
