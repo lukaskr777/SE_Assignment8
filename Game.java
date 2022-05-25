@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 public class Game {
 	ArrayList players = new ArrayList();
-	int[] places = new int[6];
+	int[] places = new int[6]; // what if there is more than 6 players
 	int[] purses = new int[6];
 	boolean[] inPenaltyBox = new boolean[6];
 
@@ -15,15 +15,17 @@ public class Game {
 	int currentPlayer = 0;
 	boolean isGettingOutOfPenaltyBox;
 
+	// WHAT ????
 	public Game() {
 		for (int i = 0; i < 50; i++) {
 			popQuestions.addLast("Pop Question " + i);
 			scienceQuestions.addLast(("Science Question " + i));
 			sportsQuestions.addLast(("Sports Question " + i));
-			rockQuestions.addLast(createRockQuestion(i));
+			rockQuestions.addLast(createRockQuestion(i)); /// noob coder
 		}
 	}
-
+	
+	// useless method
 	public String createRockQuestion(int index) {
 		return "Rock Question " + index;
 	}
@@ -32,7 +34,7 @@ public class Game {
 		return (howManyPlayers() >= 2);
 	}
 
-	public boolean add(String playerName) {
+	public boolean add(String playerName) { // unclear method name
 
 		players.add(playerName);
 		places[howManyPlayers()] = 0;
@@ -48,6 +50,8 @@ public class Game {
 		return players.size();
 	}
 
+
+	
 	public void roll(int roll) {
 		System.out.println(players.get(currentPlayer) + " is the current player");
 		System.out.println("They have rolled a " + roll);
@@ -59,7 +63,7 @@ public class Game {
 				System.out.println(players.get(currentPlayer) + " is getting out of the penalty box");
 				places[currentPlayer] = places[currentPlayer] + roll;
 				if (places[currentPlayer] > 11)
-					places[currentPlayer] = places[currentPlayer] - 12;
+					places[currentPlayer] = places[currentPlayer] - 12; // what if later on the player ca move more than 12 at a time- index out of
 
 				System.out.println(players.get(currentPlayer)
 						+ "'s new location is "
@@ -86,7 +90,10 @@ public class Game {
 
 	}
 
+
 	private void askQuestion() {
+
+		
 		if (currentCategory() == "Pop")
 			System.out.println(popQuestions.removeFirst());
 		if (currentCategory() == "Science")
@@ -96,6 +103,8 @@ public class Game {
 		if (currentCategory() == "Rock")
 			System.out.println(rockQuestions.removeFirst());
 	}
+
+
 
 	private String currentCategory() {
 		if (places[currentPlayer] == 0)
@@ -119,7 +128,8 @@ public class Game {
 		return "Rock";
 	}
 
-	public boolean wasCorrectlyAnswered() {
+
+	public boolean wasCorrectlyAnswered() { // misleading name
 		if (inPenaltyBox[currentPlayer]) {
 			if (isGettingOutOfPenaltyBox) {
 				System.out.println("Answer was correct!!!!");
@@ -129,7 +139,7 @@ public class Game {
 						+ purses[currentPlayer]
 						+ " Gold Coins.");
 
-				boolean winner = didPlayerWin();
+				boolean winner = didPlayerWin(); 
 				currentPlayer++;
 				if (currentPlayer == players.size())
 					currentPlayer = 0;
@@ -139,7 +149,7 @@ public class Game {
 				currentPlayer++;
 				if (currentPlayer == players.size())
 					currentPlayer = 0;
-				return true;
+				return true; // returns true eventhough player did not win
 			}
 
 		} else {
@@ -164,6 +174,7 @@ public class Game {
 		System.out.println("Question was incorrectly answered");
 		System.out.println(players.get(currentPlayer) + " was sent to the penalty box");
 		inPenaltyBox[currentPlayer] = true;
+		
 
 		currentPlayer++;
 		if (currentPlayer == players.size())
@@ -171,7 +182,11 @@ public class Game {
 		return true;
 	}
 
+	// misleading, returns true when player did not win but the name of the methods indicated it should return false
 	private boolean didPlayerWin() {
 		return !(purses[currentPlayer] == 6);
+
 	}
+
+
 }

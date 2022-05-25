@@ -15,7 +15,6 @@ public class GameRunner {
 		Random rand = new Random();
 
 		do {
-
 			aGame.roll(rand.nextInt(5) + 1);
 
 			if (rand.nextInt(9) == 7) {
