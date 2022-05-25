@@ -1,0 +1,21 @@
+Weakness number 1:
+The name of the method didPlayerWin() is very misleading, since it returns true if the player has not won yet, even though the name
+suggests it should return false in that case.  Vice versa for when the player has won.  Also, if there is a question that is worth two gold
+purses, the "==" condition could cause future bugs, since the counter could go past 6.
+
+Weakness number 2:
+When all questions are exhausted, there is no definition of what will happen, which will most definitely cause bugs in all game implementations
+if left as is.
+
+Weakness number 3:
+Changing the condition of game termination can make the wasCorrectlyAnswered() method create bugs, since it simply returns a "true"
+value for all cases for some conditions.
+
+Weakness number 4:
+askQuestion() method uses "==" operator to evaluate strings, which, since they are objects, compares the references of both variables.
+This can cause a lot of bugs in the future.
+
+Weakness number 5:
+wrongAnswer() can be incorporated into wasCorrectlyAnswered() by simply defining a condition and when it is false, would do what the
+wrongAnswer() method does.  This is a general design flaw, however, also with the GameRunner.java class, because this method is
+required to simulate the game in the way that is given.
