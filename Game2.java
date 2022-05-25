@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
-
 
 
 // add observers ???
@@ -132,7 +130,7 @@ public class Game2 {
 
         boolean continue_game = true;
 		if (current_player.inPenatlyBox() && !current_player.isGettinFromPentalyBox()) {
-				continue_game = !didPlayerWin();	
+				continue_game = !didPlayerWin();
 		} 	
 		else{
 				
@@ -145,7 +143,7 @@ public class Game2 {
 						+ current_player.getPurse()
 						+ " Gold Coins.");
 	
-				 continue_game = !didPlayerWin();			
+				 continue_game = !didPlayerWin();
 		}
 		
     	current_player = nextPlayer();
@@ -163,7 +161,7 @@ public class Game2 {
 
 	// misleading, returns true when player did not win but the name of the methods indicated it should return false
 	private boolean didPlayerWin() {
-		return !(current_player.getPurse() >= winning_purse);
+		return current_player.getPurse() >= winning_purse;
 
 	}
 
