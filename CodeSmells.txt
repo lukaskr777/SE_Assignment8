@@ -1,0 +1,20 @@
+Group 52
+Matej Spisak, Lukas Krajcik
+6289170, 6284028
+Smell number 1:
+All questions are created in the same way with the exception of rock questions, creating all of them in the same way directly is a much
+better choice (https://refactoring.guru/smells/lazy-class).
+
+Smell number 2:
+Roll method is unbearably long, has duplicate chunks of code which can be extracted to a separate method.  Because a lot of code is
+being executed without explanation, it makes the method hard to understand.  Extracting certain chunks into separate methods would
+make the code very self-explanatory (https://refactoring.guru/smells/long-method, https://refactoring.guru/smells/duplicate-code).
+
+Smell number 3/4 (solves both currentCategory and askQuestion):
+Places can be stored as objects, holding the question queue along with a name.  When a player is at one place, getQuestion() can be
+called from the current place to remove a lot of unnecessary code.  This is also more scalable for a larger number of places.  Also,
+if a different topic layout is desired, there would always need to be a new condition or a complete rewrite of the method would be required (https://refactoring.guru/smells/shotgun-surgery).
+
+Smell number 5:
+Duplicate code, player change check is called 4 times in different methods, could also be made much simpler.  Nested if conditions also
+make for a difficult debugging/understanding experience (https://refactoring.guru/smells/duplicate-code).
