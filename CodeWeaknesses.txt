@@ -38,3 +38,6 @@ in the future.
 Weakness number 9:
 What if there are more players than 6?  The start of the Game class sets the player number to 6, but for different implementations of
 Game a lot of code would need to be refactored.
+
+Weakness number 10:
+Players can never get out of penalty boxes, but can only get in - they HAVE to answer all questions right or else they can never win.
