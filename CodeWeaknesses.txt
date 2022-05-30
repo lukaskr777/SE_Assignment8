@@ -1,0 +1,40 @@
+Group number 52
+Matej Spisak, Lukas Krajcik
+6289170, 6284028
+Weakness number 1:
+The name of the method didPlayerWin() is very misleading, since it returns true if the player has not won yet, even though the name
+suggests it should return false in that case.  Vice versa for when the player has won.  Also, if there is a question that is worth two gold
+purses, the "==" condition could cause future bugs, since the counter could go past 6.
+
+Weakness number 2:
+When all questions are exhausted, there is no definition of what will happen, which will most definitely cause bugs in all game implementations
+if left as is.
+
+Weakness number 3:
+Changing the condition of game termination can make the wasCorrectlyAnswered() method create bugs, since it simply returns a "true"
+value for all cases for some conditions.
+
+Weakness number 4:
+askQuestion() method uses "==" operator to evaluate strings, which, since they are objects, compares the references of both variables.
+This can cause a lot of bugs in the future.
+
+Weakness number 5:
+wrongAnswer() can be incorporated into wasCorrectlyAnswered() by simply defining a condition and when it is false, would do what the
+wrongAnswer() method does.  This is a general design flaw, however, also with the GameRunner.java class, because this method is
+required to simulate the game in the way that is given.
+
+Weakness number 6:
+If the board size is changed, the method roll could break the game if not refactored.  It is much better to add a single variable upon which
+the board size is dependent in the entire program.
+
+Weakness number 7:
+wasCorrectlyAnswered() method has a misleading name.  It decides whether to continue the game and the implementation also implies that
+this method is called when the answer is correct, it does not check the correctness of the answer.
+
+Weakness number 8:
+add() method has a misleading name.  It does not say what it is adding, despite it adding new players, which can cause bugs/misunderstandings
+in the future.
+
+Weakness number 9:
+What if there are more players than 6?  The start of the Game class sets the player number to 6, but for different implementations of
+Game a lot of code would need to be refactored.
