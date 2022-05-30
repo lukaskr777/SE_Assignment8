@@ -1,0 +1,37 @@
+Group 52
+Matej Spisak, Lukas Krajcik
+6289170, 6284028
+Assignment 8:
+Firstly we have encapsulated players as objects. This way we do not have to have multiple separate arrays in the Game.java and we don't need to know what corresponds to what.
+The game.java will only store a list of players and each player will store its state variables, such as- position, purse, if he/she is in penatly box, etc....
+The game logic will then keep track of the current Player, and can update its state- position, purse; and if needed it can also check what is its position, etc..
+This is a huge improvement compared to the former code, since the arrays were all over the place, and it was not clear at all what stores what.
+
+Furthermore, we create a Question object which will substitute the string question. Question object will also store how many points will the player get when answering correctly. 
+Also the question object can provide an answer for the question (using .getAnswer() method).
+In the future we can easily introduce additional features to the Question class with little to no effort, thus making it scalable. 
+In the former source code it would not be possible to define this behavior for questions, since they were only a string.
+
+Thirdly, when initializing the Game, we create QuestionBox objects which will store Question objects.
+QuestionBox object will be created in a separate QuestionGenerator class, utilizing the factory method.
+After that, still in the initialization method, we will generate the board array(as we wish), and set at every array position a Place Object (of an abstract class Place)- (PopPlace, SciencePlace, SportsPlace, RockPlace).
+Each Place aggregates a chosen QuestionBox- for example PopPlace aggregates a QuestionBox with pop questions.
+Even though right now, all the Place types have identical functionality, in the future we may introduce, for example, HardQuestion place, that will have additional functionality. 
+And so it is better to already define the hierarchical structure of the Place types. 
+The former code would be very difficult to modify, since there is no such thing as a Place, and so it would not be possible to modify the behavior.
+
+Thanks to the introduction of the board array of Places that store corresponding QuestionBoxes, we can completely remove the methods for determining what question to ask the player.
+Moreover the lists of questions are not stored separately in the Game object, which makes the code cleaner. 
+When a player is at a given position, we directly retrieve the Place at he is in, and the place calls the .getQuestion() method which will return the question.
+
+To get rid of so many print statements, we introduce a separate class for printing these statements called GameAnnouncer. This way, if we want to introduce/change announcments,
+we do not need to go through the game logic code, we just edit the game announcments. It will then be easier (if we were to further develop the game), to split the work in between several developers. 
+ 
+We also remove the nested conditions, so the cade is clearer, and we extract functionalities such as updating the position of a player to separate methods.
+This way, no code is repeated twice, and since the function also have names, when a person reads the code, she/he will understand what each code chunk means.
+For example, there was a condition (if roll % 2 != 0), it is not clear what is happening here; and so we can extract it to a method luckyRoll(int).
+
+There were numerous methods with a misleading names - for example didPlayerWin(), which returns true if the player did not win - completely misleading. We changed all the names of these methods to more proper names.
+
+Finally there was a problem where only six players could play the game (otherwise places, purses arrays would get index error). 
+This is actually fixed by Player object, where when creating new player, the player by definition stores these variables inside it, so no error like this can happen.
