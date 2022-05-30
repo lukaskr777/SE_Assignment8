@@ -5,15 +5,15 @@ import java.util.ArrayList;
 
 public class Game2 {
     
-    int board_size;
-    int winning_purse;
-    Place[] board;
-	ArrayList<Player> players;
-    int current_player_id;
-    Player current_player;
-    Question current_question;
-    GameAnnouncer announcer;
-
+    protected int board_size;
+    protected int winning_purse;
+    protected Place[] board;
+	protected ArrayList<Player> players;
+    protected int current_player_id;
+    protected Player current_player;
+    protected Question current_question;
+    protected GameAnnouncer announcer;
+	
 	
 	public Game2() {
 		this.board_size = 12;
@@ -21,20 +21,23 @@ public class Game2 {
 		this.current_player_id = 0;
         this.players = new ArrayList<>();
         this.announcer = new GameAnnouncer();
+		this.announcer.setSilent(true);
 		initializePlayBoard();
 	}
 
+	public ArrayList<Player> getPlayers(){ return this.players; }
+	
     private void initializePlayBoard(){
-        int question_amount = 50;
+		int question_amount = 50;
         QuestionBoxGenerator generator = new QuestionBoxGenerator();
-
+		
         QuestionBox pop = generator.generatePopBox(question_amount);
         QuestionBox science = generator.generateSciencePlace(question_amount);
         QuestionBox sports = generator.generateSportsBox(question_amount);
         QuestionBox rock = generator.generateRockBox(question_amount);
-
+		
         board = new Place[board_size];
-
+		
         board[0] = new PopPlace(pop);
         board[1] = new SciencePlace(science);
         board[2] = new SportsPlace(sports);
@@ -47,8 +50,8 @@ public class Game2 {
         board[9] = new SciencePlace(science);
         board[10] = new SportsPlace(sports);
         board[11] = new RockPlace(rock);
-
-
+		
+		
     }
 
     private Player nextPlayer(){
@@ -56,53 +59,53 @@ public class Game2 {
         current_player_id = (current_player_id + 1)% players.size();
         return next_player;
     }
-
-
+	
+	
 	public boolean isPlayable() {
 		return (howManyPlayers() >= 2);
 	}
-
+	
 	public boolean addPlayer(String playerName) {
-
-        players.add(new Player(playerName, 0,0,false));
-
-
+		
+		players.add(new Player(playerName, 0,0,false));
+		
+		
 		announcer.printPlayerAdded(playerName);
 		announcer.printPlayerNumber(players.size());
 		return true;
 	}
-
+	
 	public int howManyPlayers() {
 		return players.size();
 	}
-
+	
     public boolean luckRoll(int roll){
-        return roll % 2 != 0;
+		return roll % 2 != 0;
     }
-
+	
 	
 	public void roll(int roll) {
-        this.current_player = nextPlayer();
-
-        announcer.printCurrentPlayer(current_player.getName());
+		this.current_player = nextPlayer();
+		
+		announcer.printCurrentPlayer(current_player.getName());
 		announcer.printRoll(roll);
-
+		
 		if(current_player.inPenatlyBox() && !luckRoll(roll)){
 			
-
-            announcer.printNotOutOfPenaltyBox(current_player.getName());
+			
+			announcer.printNotOutOfPenaltyBox(current_player.getName());
 			current_player.setIsgettingFromPenalty(false);
 		}
 		else{
 			if(current_player.inPenatlyBox()){
 				current_player.setIsgettingFromPenalty(true);
-
+				
 				announcer.printOutOfPenaltyBox(current_player.getName());
 				
 			}
 			movePlayer(current_player, roll);
 			askQuestionToPlayer(current_player);
-	
+			
 		}
 	}
 
@@ -122,13 +125,14 @@ public class Game2 {
         announcer.printQuestion(current_question.getQuestion());
     }
 
-	public boolean correctAnswer() {
+	public boolean correctAnswerAndContinue() {
 
         boolean continue_game = true;
 		if (current_player.inPenatlyBox() && !current_player.isGettinFromPentalyBox()) {
 				continue_game = !didPlayerWin();
 		} 	
 		else{
+				current_player.setInPenatly(false);
 				
 				announcer.printCorrect();
 				
@@ -136,18 +140,16 @@ public class Game2 {
 
                 announcer.printCoins(current_player.getName(), current_player.getPurse());
 	
-				 continue_game = !didPlayerWin();
-		}
-		
-    	current_player = nextPlayer();
+				continue_game = !didPlayerWin();
+		}		
+
     	return continue_game;
 	}
 
-	public boolean wrongAnswer() {
+	public boolean wrongAnswerAndContinue() {
 		announcer.printIncorrect();
 		announcer.printSentToPenaltyBox(current_player.getName());
 		current_player.setInPenatly(true);
-		current_player = nextPlayer();
         
 		return true;
 	}
